@@ -9,3 +9,4 @@ tweepy
 python-twitter
 kafka-python==2.0.1
 python-dotenv
+hdfs

@@ -105,27 +105,37 @@ services:
     volumes:
       - mongodb:/data/db
       - ./docker/mongodb/mongod.conf:/etc/mongod.conf
-    #environment:
-    #- MONGO_INITDB_DATABASE=$${INIT_DATABASE}
-    #- MONGO_INITDB_ROOT_USERNAME=$${ROOT_USERNAME}
-    #- MONGO_INITDB_ROOT_PASSWORD=$${ROOT_PASSWORD}
+    # environment:
+    #   - MONGO_INITDB_DATABASE=$${MONGO_INIT_DATABASE}
+    #   - MONGO_INITDB_ROOT_USERNAME=$${MONGO_ROOT_USERNAME}
+    #   - MONGO_INITDB_ROOT_PASSWORD=$${MONGO_ROOT_PASSWORD}
     env_file:
       - ./docker/mongodb/mongo.env
 
   mongo-express:
     image: mongo-express:1.0.0-alpha
     container_name: mongo-express
-    environment:
-      #- ME_CONFIG_MONGODB_AUTH_DATABASE=$${INIT_DATABASE}
-      - ME_CONFIG_MONGODB_SERVER=mongo:27017
-      #- ME_CONFIG_BASICAUTH_USERNAME=$${ROOT_USERNAME}
-      #- ME_CONFIG_BASICAUTH_PASSWORD=$${ROOT_PASSWORD}
+    # environment:
+    #   #- ME_CONFIG_MONGODB_AUTH_DATABASE=$${INIT_DATABASE}
+    #   - ME_CONFIG_MONGODB_SERVER=mongo
+    #   - ME_CONFIG_MONGODB_PORT=27017
+    #   - ME_CONFIG_MONGODB_ENABLE_ADMIN=false
+    #   - ME_CONFIG_BASICAUTH_USERNAME=$${MONGO_ROOT_USERNAME}
+    #   - ME_CONFIG_BASICAUTH_PASSWORD=$${MONGO_ROOT_PASSWORD}
     depends_on:
       - mongo
     ports:
       - "8081:8081"
     env_file:
       - ./docker/mongodb/mongo.env
+
+  streamlit:
+    build: ./docker/streamlit
+    container_name: streamlit
+    ports:
+      - "8501:8501"
+    volumes:
+      - "./app:/usr/src/app"
 
 volumes:
   mongodb:
