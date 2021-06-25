@@ -1,3 +1,5 @@
+# Twitter hashtags monitoring
+
 ## 1. Créez votre fichier d'environnement et insérez vos tokens and consumer key twitter
 `mv .env.sample .env`
 
