@@ -1,5 +1,6 @@
 .env
 venv
+pyspark_notebook.env
 
 ### JupyterNotebooks ###
 # gitignore template for Jupyter Notebooks

@@ -93,7 +93,7 @@ if add_selectbox == "Main":
         }})))
     df_between_11_and_12 = get_top_10_dataframe(df_between_11_and_12)
 
-    st.markdown('<h1>Top 10 hashtags between 11 and 12 on friday</h1>', unsafe_allow_html=True)
+    st.markdown('<h1>Top 10 hashtags between 11am and 12am on friday</h1>', unsafe_allow_html=True)
 
     base = alt.Chart(df_between_11_and_12).mark_bar().encode(
      x=alt.X('hashtag', sort=None),
@@ -118,7 +118,7 @@ if add_selectbox == "Main":
         }})))
     df_greater_than_12 = get_top_10_dataframe(df_greater_than_12)
 
-    st.markdown('<h1>Top 10 hashtags after 12 on friday</h1>', unsafe_allow_html=True)
+    st.markdown('<h1>Top 10 hashtags after 12am on friday</h1>', unsafe_allow_html=True)
 
     base = alt.Chart(df_greater_than_12).mark_bar().encode(
      x=alt.X('hashtag', sort=None),
