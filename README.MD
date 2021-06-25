@@ -16,7 +16,7 @@
 | Streamlit     | 8501  | Data Monitoring | 
 | Jupyter Notebook     | 8888  | Live Coding | 
 
-## 4. Lancer dans l'ordre les notebook 
+## 4. Lancez dans l'ordre les notebook 
 + kafka-producer_step_1
 + kafka-consumer_step_2
 + spark_batch_step_3
