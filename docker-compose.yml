@@ -57,7 +57,7 @@ services:
       - PYSPARK_PYTHON=/usr/bin/python3
       - PYSPARK_DRIVER_PYTHON=ipython3
     env_file:
-      - ./docker/pyspark_notebook/pyspark_notebook.env
+      - ./.env
 
   zookeeper:
     container_name: zookeeper
