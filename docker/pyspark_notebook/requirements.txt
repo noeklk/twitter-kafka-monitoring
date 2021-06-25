@@ -12,4 +12,5 @@ python-dotenv
 hdfs
 rec-avro
 avro
-fast-avro
+fastavro
+pywebhdfs
