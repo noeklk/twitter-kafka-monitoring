@@ -66,29 +66,73 @@ if add_selectbox == "Main":
     df = pd.DataFrame(list(collection.find({})))
     df = get_top_10_dataframe(df)
 
-    #st.write(df)
-    st.write("Top 10 time wide hashtags")
+    st.markdown('<h1>Top 10 no filter</h1>', unsafe_allow_html=True)
 
-    st.write(alt.Chart(df).mark_bar().encode(
+    base = alt.Chart(df).mark_bar().encode(
      x=alt.X('hashtag', sort=None),
      y='count',
- ))
+     color=alt.condition(
+         alt.datum.count >= 1000,
+         alt.value('orange'),
+         alt.value('steelblue')
+         )
+    ).properties(
+     width=750,
+     height=400
+    )
+
+    st.write(base)
 
 #########################################################################################################################
 
-    df_between_12_and_12 = pd.DataFrame(list(collection.find({"datetime": {
+    df_between_11_and_12 = pd.DataFrame(list(collection.find({"datetime": {
             '$gte': datetime(2021, 6, 25, 11),
             '$lt': datetime(2021, 6, 25, 12)
         }})))
-    df_between_12_and_12 = get_top_10_dataframe(df_between_12_and_12)
+    df_between_11_and_12 = get_top_10_dataframe(df_between_11_and_12)
 
-    #st.write(df)
-    st.write("Top 10 time hashtags between 11 and 12 on friday")
+    st.markdown('<h1>Top 10 hashtags between 11 and 12 on friday</h1>', unsafe_allow_html=True)
 
-    st.write(alt.Chart(df).mark_bar().encode(
+    base = alt.Chart(df_between_11_and_12).mark_bar().encode(
      x=alt.X('hashtag', sort=None),
      y='count',
-    ))
+     color=alt.condition(
+         alt.datum.count >= 1000,
+         alt.value('orange'),
+         alt.value('steelblue')
+         )
+    ).properties(
+     width=750,
+     height=400
+    )
+
+    st.write(base)
+
+    
+#########################################################################################################################
+
+    df_greater_than_12 = pd.DataFrame(list(collection.find({"datetime": {
+            '$gte': datetime(2021, 6, 25, 12)
+        }})))
+    df_greater_than_12 = get_top_10_dataframe(df_greater_than_12)
+
+    st.markdown('<h1>Top 10 hashtags after 12 on friday</h1>', unsafe_allow_html=True)
+
+    base = alt.Chart(df_greater_than_12).mark_bar().encode(
+     x=alt.X('hashtag', sort=None),
+     y='count',
+     color=alt.condition(
+         alt.datum.count >= 1000,
+         alt.value('orange'),
+         alt.value('steelblue')
+         )
+    ).properties(
+     width=750,
+     height=400
+    )
+    
+    st.write(base)
+
 #########################################################################################################################
 
 # if add_selectbox == "Correlations":
