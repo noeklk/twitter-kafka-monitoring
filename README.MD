@@ -14,7 +14,7 @@
 | Hadoop-WebUI  | 9870  |                       |  
 | Hadoop-HDFS   | 9000  |                       |  
 | Streamlit     | 8501  | Data Monitoring | 
-| Jupyter Notebook     | 8888  | Data Monitoring | 
+| Jupyter Notebook     | 8888  | Live Coding | 
 
 ## 4. Lancer dans l'ordre les notebook 
 + kafka-producer_step_1
