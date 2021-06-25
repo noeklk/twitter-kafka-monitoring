@@ -4,8 +4,10 @@ from pymongo import MongoClient
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-from datetime import datetime
+from datetime import datetime as dt
+import datetime
 import altair as alt
+import pytz
 
 #########################################################################################################################
 
@@ -86,8 +88,8 @@ if add_selectbox == "Main":
 #########################################################################################################################
 
     df_between_11_and_12 = pd.DataFrame(list(collection.find({"datetime": {
-            '$gte': datetime(2021, 6, 25, 11),
-            '$lt': datetime(2021, 6, 25, 12)
+            '$gte': dt(2021, 6, 25, 11),
+            '$lt': dt(2021, 6, 25, 12)
         }})))
     df_between_11_and_12 = get_top_10_dataframe(df_between_11_and_12)
 
@@ -112,13 +114,41 @@ if add_selectbox == "Main":
 #########################################################################################################################
 
     df_greater_than_12 = pd.DataFrame(list(collection.find({"datetime": {
-            '$gte': datetime(2021, 6, 25, 12)
+            '$gte': dt(2021, 6, 25, 12)
         }})))
     df_greater_than_12 = get_top_10_dataframe(df_greater_than_12)
 
     st.markdown('<h1>Top 10 hashtags after 12 on friday</h1>', unsafe_allow_html=True)
 
     base = alt.Chart(df_greater_than_12).mark_bar().encode(
+     x=alt.X('hashtag', sort=None),
+     y='count',
+     color=alt.condition(
+         alt.datum.count >= 1000,
+         alt.value('orange'),
+         alt.value('steelblue')
+         )
+    ).properties(
+     width=750,
+     height=400
+    )
+
+    st.write(base)
+
+#########################################################################################################################
+
+    hours_removed = datetime.timedelta(hours = 1)
+    today = dt.now(pytz.timezone('Europe/Paris'))
+    new_datetime = today - hours_removed
+
+    df_since_last_hour = pd.DataFrame(list(collection.find({"datetime": {
+            '$gte': new_datetime
+        }})))
+    df_since_last_hour = get_top_10_dataframe(df_since_last_hour)
+
+    st.markdown('<h1>Top 10 hashtags since last hour</h1>', unsafe_allow_html=True)
+
+    base = alt.Chart(df_since_last_hour).mark_bar().encode(
      x=alt.X('hashtag', sort=None),
      y='count',
      color=alt.condition(
