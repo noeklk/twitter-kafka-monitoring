@@ -4,7 +4,10 @@ from pymongo import MongoClient
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-from datetime import datetime
+from datetime import datetime as dt
+import datetime
+import altair as alt
+import pytz
 
 #########################################################################################################################
 
@@ -20,13 +23,6 @@ collection = db.tweet
 
 #########################################################################################################################
 
-def convert_to_datetime(timestamp):
-    dt_object = datetime.fromtimestamp(timestamp)
-    return dt_object
-
-
-#########################################################################################################################
-
 # TITLE
 st.markdown(
     """<link 
@@ -38,9 +34,22 @@ st.markdown(
     unsafe_allow_html=True
 )
 st.markdown(
-    '<h1><i class="fab fa-spotify"></i> Spotify Dashboard</h1>',
+    '<h1><i class="fab fa-twitter"></i> Twitter Dashboard</h1>',
     unsafe_allow_html=True
 )
+
+#########################################################################################################################
+
+# FUNCTIONS
+
+def get_top_10_dataframe(df):
+    df = df.drop(columns=["_id"])
+    df = pd.DataFrame(df.pivot_table(index=['hashtag'], aggfunc='size'))
+    df.columns = ['count']
+    df = df.nlargest(10, 'count')
+    df = pd.DataFrame([df.index, df["count"]]).transpose()
+    df.columns = ["hashtag", "count"]
+    return df
 
 #########################################################################################################################
 
@@ -56,32 +65,103 @@ add_selectbox = st.sidebar.selectbox(
 if add_selectbox == "Main":
     # MAIN SHOW
 
-    df = pd.DataFrame(list(collection.find()))
-    df["timestamp"] = pd.to_datetime(df["timestamp"], unit='ms')
-    df = df.groupby(df.columns.tolist(), as_index=False).size()  
-    st.write(df)
+    df = pd.DataFrame(list(collection.find({})))
+    df = get_top_10_dataframe(df)
 
-    data = pd.DataFrame(
-        df,
-        columns=["hashtag", "timestamp"]).set_index(['hashtag']
+    st.markdown('<h1>Top 10 no filter</h1>', unsafe_allow_html=True)
+
+    base = alt.Chart(df).mark_bar().encode(
+     x=alt.X('hashtag', sort=None),
+     y='count',
+     color=alt.condition(
+         alt.datum.count >= 1000,
+         alt.value('orange'),
+         alt.value('steelblue')
+         )
+    ).properties(
+     width=750,
+     height=400
     )
 
-    st.write("tweet hashtags")
-    st.bar_chart(data=data)
+    st.write(base)
 
+#########################################################################################################################
 
+    df_between_11_and_12 = pd.DataFrame(list(collection.find({"datetime": {
+            '$gte': dt(2021, 6, 25, 11),
+            '$lt': dt(2021, 6, 25, 12)
+        }})))
+    df_between_11_and_12 = get_top_10_dataframe(df_between_11_and_12)
 
+    st.markdown('<h1>Top 10 hashtags between 11am and 12am on friday</h1>', unsafe_allow_html=True)
 
+    base = alt.Chart(df_between_11_and_12).mark_bar().encode(
+     x=alt.X('hashtag', sort=None),
+     y='count',
+     color=alt.condition(
+         alt.datum.count >= 1000,
+         alt.value('orange'),
+         alt.value('steelblue')
+         )
+    ).properties(
+     width=750,
+     height=400
+    )
 
+    st.write(base)
 
+    
+#########################################################################################################################
 
+    df_greater_than_12 = pd.DataFrame(list(collection.find({"datetime": {
+            '$gte': dt(2021, 6, 25, 12)
+        }})))
+    df_greater_than_12 = get_top_10_dataframe(df_greater_than_12)
 
+    st.markdown('<h1>Top 10 hashtags after 12am on friday</h1>', unsafe_allow_html=True)
 
+    base = alt.Chart(df_greater_than_12).mark_bar().encode(
+     x=alt.X('hashtag', sort=None),
+     y='count',
+     color=alt.condition(
+         alt.datum.count >= 1000,
+         alt.value('orange'),
+         alt.value('steelblue')
+         )
+    ).properties(
+     width=750,
+     height=400
+    )
 
+    st.write(base)
 
+#########################################################################################################################
 
+    hours_removed = datetime.timedelta(hours = 1)
+    today = dt.now(pytz.timezone('Europe/Paris'))
+    new_datetime = today - hours_removed
 
+    df_since_last_hour = pd.DataFrame(list(collection.find({"datetime": {
+            '$gte': new_datetime
+        }})))
+    df_since_last_hour = get_top_10_dataframe(df_since_last_hour)
 
+    st.markdown('<h1>Top 10 hashtags since last hour</h1>', unsafe_allow_html=True)
+
+    base = alt.Chart(df_since_last_hour).mark_bar().encode(
+     x=alt.X('hashtag', sort=None),
+     y='count',
+     color=alt.condition(
+         alt.datum.count >= 1000,
+         alt.value('orange'),
+         alt.value('steelblue')
+         )
+    ).properties(
+     width=750,
+     height=400
+    )
+    
+    st.write(base)
 
 #########################################################################################################################
 
