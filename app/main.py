@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from datetime import datetime
+import altair as alt
 
 #########################################################################################################################
 
@@ -56,31 +57,21 @@ add_selectbox = st.sidebar.selectbox(
 if add_selectbox == "Main":
     # MAIN SHOW
 
-    df = pd.DataFrame(list(collection.find()))
-    df["timestamp"] = pd.to_datetime(df["timestamp"], unit='ms')
-    df = df.groupby(df.columns.tolist(), as_index=False).size()  
+    df = pd.DataFrame(list(collection.find({})))
+    #df = df.drop(columns=["_id"])
+    df = pd.DataFrame(df.pivot_table(index=['hashtag'], aggfunc='size'))
+    df.columns = ['count']
+    df = df.nlargest(10, 'count')
+    df = pd.DataFrame([df.index, df["count"]]).transpose()
+    df.columns = ["hashtag", "count"]
+
     st.write(df)
-
-    data = pd.DataFrame(
-        df,
-        columns=["hashtag", "timestamp"]).set_index(['hashtag']
-    )
-
     st.write("tweet hashtags")
-    st.bar_chart(data=data)
 
-
-
-
-
-
-
-
-
-
-
-
-
+    st.write(alt.Chart(df).mark_bar().encode(
+     x=alt.X('hashtag', sort=None),
+     y='count',
+ ))
 
 
 #########################################################################################################################
