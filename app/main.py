@@ -21,13 +21,6 @@ collection = db.tweet
 
 #########################################################################################################################
 
-def convert_to_datetime(timestamp):
-    dt_object = datetime.fromtimestamp(timestamp)
-    return dt_object
-
-
-#########################################################################################################################
-
 # TITLE
 st.markdown(
     """<link 
@@ -39,9 +32,22 @@ st.markdown(
     unsafe_allow_html=True
 )
 st.markdown(
-    '<h1><i class="fab fa-spotify"></i> Spotify Dashboard</h1>',
+    '<h1><i class="fab fa-twitter"></i> Twitter Dashboard</h1>',
     unsafe_allow_html=True
 )
+
+#########################################################################################################################
+
+# FUNCTIONS
+
+def get_top_10_dataframe(df):
+    df = df.drop(columns=["_id"])
+    df = pd.DataFrame(df.pivot_table(index=['hashtag'], aggfunc='size'))
+    df.columns = ['count']
+    df = df.nlargest(10, 'count')
+    df = pd.DataFrame([df.index, df["count"]]).transpose()
+    df.columns = ["hashtag", "count"]
+    return df
 
 #########################################################################################################################
 
@@ -58,22 +64,31 @@ if add_selectbox == "Main":
     # MAIN SHOW
 
     df = pd.DataFrame(list(collection.find({})))
-    #df = df.drop(columns=["_id"])
-    df = pd.DataFrame(df.pivot_table(index=['hashtag'], aggfunc='size'))
-    df.columns = ['count']
-    df = df.nlargest(10, 'count')
-    df = pd.DataFrame([df.index, df["count"]]).transpose()
-    df.columns = ["hashtag", "count"]
+    df = get_top_10_dataframe(df)
 
-    st.write(df)
-    st.write("tweet hashtags")
+    #st.write(df)
+    st.write("Top 10 time wide hashtags")
 
     st.write(alt.Chart(df).mark_bar().encode(
      x=alt.X('hashtag', sort=None),
      y='count',
  ))
 
+#########################################################################################################################
 
+    df_between_12_and_12 = pd.DataFrame(list(collection.find({"datetime": {
+            '$gte': datetime(2021, 6, 25, 11),
+            '$lt': datetime(2021, 6, 25, 12)
+        }})))
+    df_between_12_and_12 = get_top_10_dataframe(df_between_12_and_12)
+
+    #st.write(df)
+    st.write("Top 10 time hashtags between 11 and 12 on friday")
+
+    st.write(alt.Chart(df).mark_bar().encode(
+     x=alt.X('hashtag', sort=None),
+     y='count',
+    ))
 #########################################################################################################################
 
 # if add_selectbox == "Correlations":
